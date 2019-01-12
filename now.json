@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "name": "nodejs",
+  "builds": [
+    { "src": "*.html", "use": "@now/static" },
+    { "src": "*.js", "use": "@now/node" }
+  ],
+  "env": {
+    "ITEMS_URL": "https://your_site.omeka.net/api/items?collection=1"
+  },
+  "routes": [
+    { "src":  "/geojson", "dest":  "index.js" }
+  ]
+}

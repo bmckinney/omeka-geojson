@@ -1,0 +1,16 @@
+{
+  "name": "omeka-geojson",
+  "version": "1.0.0",
+  "description": "generate geojson from omeka items",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "bmckinney",
+  "license": "MIT",
+  "dependencies": {
+    "jsonata": "^1.6.4",
+    "node-fetch": "^2.3.0",
+    "request": "^2.88.0"
+  }
+}
