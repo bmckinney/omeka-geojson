@@ -4,8 +4,11 @@
     <meta charset=utf-8 />
     <title>Omeka geoJson</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
-    <link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='./lib/mapbox-gl-markers.js'></script>
+    <link href='./lib/mapbox-gl-markers.css' rel='stylesheet' />
+    <script src="./geojson"></script>
     <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
@@ -14,17 +17,17 @@
 <body>
 <div id='map'></div>
 <script>
-    L.mapbox.accessToken = 'your_mapbox_token_goes_here';
-    var map = L.mapbox.map('map', 'mapbox.light')
-        .setView([42.8636302, -90.2013585], 9);
-
-    var featureLayer = L.mapbox.featureLayer()
-        .loadURL('/geojson')
-        .addTo(map);
-
-    featureLayer.on('ready', function() {
-        map.fitBounds(featureLayer.getBounds());
+    mapboxgl.accessToken = 'mapbox_access_token';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v9',
+        center: [-90.2013585, 42.8636302],
+        zoom: 13
     });
+    map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+    map.addControl(new MapboxMarkers(geojson));
+    map.addControl(new mapboxgl.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: true }));
+
 </script>
 </body>
 </html>

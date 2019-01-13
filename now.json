@@ -3,12 +3,18 @@
   "name": "nodejs",
   "builds": [
     { "src": "*.html", "use": "@now/static" },
-    { "src": "*.js", "use": "@now/node" }
+    { "src": "index.js", "use": "@now/node" },
+    { "src": "lib/mapbox-gl-markers.js", "use": "@now/static" },
+    { "src": "lib/mapbox-gl-markers.css", "use": "@now/static" },
+    { "src": "icons/*.svg", "use": "@now/static" },
+    { "src": "icons/*.png", "use": "@now/static" }
   ],
   "env": {
-    "ITEMS_URL": "https://your_site.omeka.net/api/items?collection=1"
+    "ITEMS_URL": "https://site.omeka.net/api/items?collection=1",
+    "OMEKA_SERVER": "https://site.omeka.net"
   },
   "routes": [
     { "src":  "/geojson", "dest":  "index.js" }
-  ]
+  ],
+  "alias": "alias"
 }

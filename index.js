@@ -3,6 +3,7 @@ module.exports = (req, res) => {
     const fetch = require('node-fetch');
     const request = require('request');
 
+    let omekaItemUrl = process.env.OMEKA_SERVER + "/items/show/";
     let exp = jsonata("$[].{\n" +
         "\n" +
         "    \"geometry\": {\n" +
@@ -13,8 +14,9 @@ module.exports = (req, res) => {
         "     \"properties\": {\n" +
         "       \"title\": element_texts[element[name='Title']].text,\n" +
         "       \"image\": $getImage($.files.url),\n" +
-        "       \"url\": url,\n" +
-        "       \"address\": element_texts[element[name='Street Number']].text & ' ' &\n" +
+        "       \"marker-image\": \"icons/marker-icon-2x.png\",\n" +
+        "       \"website\": '" + omekaItemUrl + "' & id,\n" +
+        "       \"description\": element_texts[element[name='Street Number']].text & ' ' &\n" +
         "          element_texts[element[name='Street Name']].text & ', ' &\n" +
         "          element_texts[element[name='Community']].text &\n" +
         "          ', ' & element_texts[element[name='State']].text & ' 53565'\n" +
@@ -68,7 +70,7 @@ module.exports = (req, res) => {
               delete array.keepSingleton;
               //console.log(JSON.stringify(array));
               res.writeHead(200, {'Content-Type': 'application/json'});
-              res.write('{ "type": "FeatureCollection", "features": ' + JSON.stringify(array) + '}');
+              res.write('var geojson = { "type": "FeatureCollection", "features": ' + JSON.stringify(array) + '};');
               res.end();
           })
     });
