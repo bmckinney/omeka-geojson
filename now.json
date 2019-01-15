@@ -7,7 +7,9 @@
     { "src": "lib/mapbox-gl-markers.js", "use": "@now/static" },
     { "src": "lib/mapbox-gl-markers.css", "use": "@now/static" },
     { "src": "icons/*.svg", "use": "@now/static" },
-    { "src": "icons/*.png", "use": "@now/static" }
+    { "src": "icons/*.png", "use": "@now/static" },
+    { "src": "icons/*.ico", "use": "@now/static" },
+    { "src": "omekaGeoJsonTransform.txt", "use": "@now/static" }
   ],
   "env": {
     "ITEMS_URL": "https://site.omeka.net/api/items?collection=1",
@@ -16,5 +18,5 @@
   "routes": [
     { "src":  "/geojson", "dest":  "index.js" }
   ],
-  "alias": "alias"
+  "alias": "site"
 }

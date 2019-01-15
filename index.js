@@ -3,7 +3,6 @@ module.exports = (req, res) => {
     const fetch = require('node-fetch');
     const request = require('request');
 
-    let omekaItemUrl = process.env.OMEKA_SERVER + "/items/show/";
     let exp = jsonata("$[].{\n" +
         "\n" +
         "    \"geometry\": {\n" +
@@ -14,8 +13,7 @@ module.exports = (req, res) => {
         "     \"properties\": {\n" +
         "       \"title\": element_texts[element[name='Title']].text,\n" +
         "       \"image\": $getImage($.files.url),\n" +
-        "       \"marker-image\": \"icons/marker-icon-2x.png\",\n" +
-        "       \"website\": '" + omekaItemUrl + "' & id,\n" +
+        "       \"website\": '" + process.env.OMEKA_SERVER + "' & '/items/show/' & id,\n" +
         "       \"description\": element_texts[element[name='Street Number']].text & ' ' &\n" +
         "          element_texts[element[name='Street Name']].text & ', ' &\n" +
         "          element_texts[element[name='Community']].text &\n" +
@@ -39,7 +37,16 @@ module.exports = (req, res) => {
                     reject(error);
                     return;
                 }
-                resolve(JSON.parse(body)[0].file_urls.thumbnail);
+                let list = JSON.parse(body);
+                let retval = list[0].file_urls.square_thumbnail;
+                // get first image in order if available
+                for (let img of list) {
+                    if (img.order  && img.order === 1) {
+                        retval = img.file_urls.square_thumbnail;
+                        break;
+                    }
+                }
+                resolve(retval);
             });
         });
     };
@@ -68,7 +75,6 @@ module.exports = (req, res) => {
           result.then(array => {
               delete array.sequence;
               delete array.keepSingleton;
-              //console.log(JSON.stringify(array));
               res.writeHead(200, {'Content-Type': 'application/json'});
               res.write('var geojson = { "type": "FeatureCollection", "features": ' + JSON.stringify(array) + '};');
               res.end();
