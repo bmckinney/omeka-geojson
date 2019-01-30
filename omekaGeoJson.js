@@ -3,6 +3,9 @@ module.exports = (req, res) => {
     const fetch = require('node-fetch');
     const request = require('request');
 
+    let q = req.url.split("?"), queryParams = "";
+    if (q.length >= 2) { queryParams = "?" + q[1]; }
+
     let exp = jsonata("$[].{\n" +
         "\n" +
         "    \"geometry\": {\n" +
@@ -24,7 +27,9 @@ module.exports = (req, res) => {
     var jsonataPromise = function(expr, data, bindings) {
         return new Promise(function(resolve, reject) {
             expr.evaluate(data, bindings, function(error, response) {
-                if(error) reject(error);
+                if(error) {
+                    resolve({});
+                }
                 resolve(response);
             });
         });
@@ -38,11 +43,16 @@ module.exports = (req, res) => {
                     return;
                 }
                 let list = JSON.parse(body);
-                let retval = list[0].file_urls.square_thumbnail;
+                let retval = list[0].mime_type ==='image/gif' ? list[0].file_urls.original : list[0].file_urls.square_thumbnail;
                 // get first image in order if available
                 for (let img of list) {
                     if (img.order  && img.order === 1) {
-                        retval = img.file_urls.square_thumbnail;
+                        // display animated gif if available
+                        if (img.mime_type === 'image/gif') {
+                            retval = img.file_urls.original
+                        } else {
+                            retval = img.file_urls.square_thumbnail;
+                        }
                         break;
                     }
                 }
@@ -65,20 +75,24 @@ module.exports = (req, res) => {
     };
     exp.assign('getCoords', getCoords);
 
-    let data;
-    fetch(process.env.ITEMS_URL)
+    fetch(process.env.OMEKA_SERVER + '/api/items'+ queryParams)
         .then(response => response.text())
         .then(body => {
-            data = JSON.parse(body);
-        }).then(() => {
-          var result = jsonataPromise(exp, data);
-          result.then(array => {
-              delete array.sequence;
-              delete array.keepSingleton;
-              res.writeHead(200, {'Content-Type': 'application/json'});
-              res.write('var geojson = { "type": "FeatureCollection", "features": ' + JSON.stringify(array) + '};');
-              res.end();
-          })
-    });
-
+            // omeka returns no items
+            if (body === '[]') {
+                res.writeHead(200, {'Content-Type': 'application/json'});
+                res.write('{ "type": "FeatureCollection", "features": {}}');
+                res.end();
+            } else {
+                var result = jsonataPromise(exp, JSON.parse(body));
+                result.then(array => {
+                    delete array.sequence;
+                    delete array.keepSingleton;
+                    res.writeHead(200, {'Content-Type': 'application/json'});
+                    res.write('{ "type": "FeatureCollection", "features": ' + JSON.stringify(array) + '}');
+                    res.end();
+                })
+            }
+       })
+       .catch(error => console.log(error) );
 };

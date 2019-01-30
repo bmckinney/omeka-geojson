@@ -1,22 +1,22 @@
 {
   "version": 2,
-  "name": "nodejs",
+  "name": "rootcellar",
   "builds": [
+    { "src": "omekaGeoJson.js", "use": "@now/node" },
     { "src": "*.html", "use": "@now/static" },
-    { "src": "index.js", "use": "@now/node" },
-    { "src": "lib/mapbox-gl-markers.js", "use": "@now/static" },
-    { "src": "lib/mapbox-gl-markers.css", "use": "@now/static" },
+    { "src": "lib/*.js", "use": "@now/static" },
+    { "src": "lib/*.css", "use": "@now/static" },
     { "src": "icons/*.svg", "use": "@now/static" },
     { "src": "icons/*.png", "use": "@now/static" },
-    { "src": "icons/*.ico", "use": "@now/static" },
-    { "src": "omekaGeoJsonTransform.txt", "use": "@now/static" }
+    { "src": "icons/*.ico", "use": "@now/static" }
   ],
   "env": {
-    "ITEMS_URL": "https://site.omeka.net/api/items?collection=1",
-    "OMEKA_SERVER": "https://site.omeka.net"
+    "OMEKA_SERVER": "https://rootcellar.omeka.net"
   },
   "routes": [
-    { "src":  "/geojson", "dest":  "index.js" }
+    { "src": "/omekaGeoJson(?<params>.*)", "dest": "omekaGeoJson.js?$params" },
+    { "src": "/api/items(?<params>.*)", "dest":  "index.html?$params"},
+    { "src": "/places", "status": 301, "headers": { "Location": "api/items?collection=1" }}
   ],
-  "alias": "site"
+  "alias": "rootcellar"
 }
