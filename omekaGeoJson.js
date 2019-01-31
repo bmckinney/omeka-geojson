@@ -5,6 +5,7 @@ module.exports = (req, res) => {
 
     let q = req.url.split("?"), queryParams = "";
     if (q.length >= 2) { queryParams = "?" + q[1]; }
+    queryParams = queryParams.replace('?itemid=', '/'); // translate single item id request
 
     let exp = jsonata("$[].{\n" +
         "\n" +
